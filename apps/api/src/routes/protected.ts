@@ -3,6 +3,7 @@ import { searchQuerySchema, newsQuerySchema, scrapeQuerySchema } from "@query402
 import { executeQuery } from "../services/query-service.js";
 import { config } from "../lib/config.js";
 import { savePaymentAttempt, saveUsageEvent, getDetailedAnalyticsData } from "../lib/persistence.js";
+import { handlePaidX402Route } from "../lib/idempotency/x402.js";
 
 export const protectedRouter = Router();
 
