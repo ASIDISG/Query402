@@ -16,6 +16,12 @@ import {
 } from "./route.js";
 import { getResponseByPaymentProof, savePaymentProofResponse } from "./service.js";
 import { getProviderById } from "../pricing.js";
+import {
+  PaymentProofError,
+  assertProofCoversQuery,
+  proofFromHeader,
+  queryCoverageDigest
+} from "../query-proof.js";
 
 async function persistDemoEvidenceIfNeeded(input: { req: Request; record: PaidRequestRecord }) {
   const evidence = getPaymentEvidence(input.req);
@@ -113,6 +119,39 @@ export async function handlePaidX402Route(
       if (existing) {
         return res.status(200).json(existing);
       }
+    }
+
+    const price = catalogProvider.priceUsd.toString();
+    const asset = evidence?.asset ?? "USDC";
+    const amount = evidence?.amount ?? price;
+    let proof = {
+      digest: queryCoverageDigest({
+        provider: input.provider,
+        target: input.queryOrUrl,
+        price
+      }),
+      asset,
+      amount
+    };
+    try {
+      const headerProof = proofFromHeader(req);
+      if (headerProof) {
+        proof = headerProof;
+      }
+      assertProofCoversQuery({
+        provider: input.provider,
+        target: input.queryOrUrl,
+        price,
+        asset,
+        amount,
+        proof
+      });
+    } catch (error) {
+      if (error instanceof PaymentProofError) {
+        abortIdempotency(req);
+        return res.status(402).json({ error: "payment_proof_mismatch" });
+      }
+      throw error;
     }
 
     const result = await input.execute();
