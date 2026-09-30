@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import Database from "better-sqlite3";
+import { resolveConfinedDataPath } from "../paths.js";
 import { MIGRATIONS } from "./migrations.js";
 
 let db: Database.Database | null = null;
@@ -94,11 +95,20 @@ export function getAnalyticsDb(dbPath: string): Database.Database {
     initError = null;
   }
 
+  let confinedPath: string;
   try {
-    const directory = path.dirname(dbPath);
+    confinedPath = resolveConfinedDataPath(dbPath);
+  } catch (error) {
+    initError = error instanceof Error ? error : new Error("Storage path is outside the data directory");
+    activeDbPath = dbPath;
+    throw initError;
+  }
+
+  try {
+    const directory = path.dirname(confinedPath);
     fs.mkdirSync(directory, { recursive: true });
 
-    const database = new Database(dbPath);
+    const database = new Database(confinedPath);
     database.pragma("journal_mode = WAL");
     database.pragma("foreign_keys = ON");
     try {
