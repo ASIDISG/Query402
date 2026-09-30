@@ -224,6 +224,11 @@ export const getX402LifecycleHandlers = (network: string) => ({
         id: paymentId,
         endpoint: req.path,
         providerId,
+        amountUsd: Number(ctx.requirements.amount),
+        network,
+        payToAddress: ctx.requirements.payTo,
+        facilitatorUrl: config.X402_FACILITATOR_URL,
+        status: "verified",
         evidence: {
           status: "verified",
           network,

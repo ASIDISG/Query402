@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   buildCapabilityMatrix,
   computeSlaBadge,
+  deriveSlaBadges,
   getProviderById,
   getProvidersByCategory,
   getSortedProviders,
@@ -21,7 +22,10 @@ describe("provider pricing", () => {
     try {
       validateProviderCatalog(duplicate);
     } catch (error) {
-      expect(error).toMatchObject({ code: "provider_catalog_conflict", providerIds: ["search.basic"] });
+      expect(error).toMatchObject({
+        code: "provider_catalog_conflict",
+        providerIds: ["search.basic"]
+      });
     }
   });
 
@@ -30,11 +34,11 @@ describe("provider pricing", () => {
       { id: "zeta.provider" },
       { id: "alpha.provider" },
       { id: "zeta.provider" },
-      { id: "alpha.provider" },
+      { id: "alpha.provider" }
     ];
 
     expect(() => validateProviderCatalog(duplicate)).toThrow(
-      "Provider catalog contains duplicate provider id(s): alpha.provider, zeta.provider",
+      "Provider catalog contains duplicate provider id(s): alpha.provider, zeta.provider"
     );
   });
   it("exposes enabled providers for each category", () => {
@@ -114,8 +118,10 @@ describe("provider pricing", () => {
       latencyEstimateMs: 100,
       qualityScore: 80,
       sourceType: "deterministic-fallback",
+      provenance: "mock",
       enabled: true,
-      slaBadge: computeSlaBadge(100, "deterministic-fallback")
+      slaBadge: computeSlaBadge(100, "deterministic-fallback"),
+      slaBadges: deriveSlaBadges({ sourceType: "deterministic-fallback", latencyEstimateMs: 100 })
     });
 
     providers.push({
@@ -127,8 +133,10 @@ describe("provider pricing", () => {
       latencyEstimateMs: 100,
       qualityScore: 80,
       sourceType: "deterministic-fallback",
+      provenance: "mock",
       enabled: true,
-      slaBadge: computeSlaBadge(100, "deterministic-fallback")
+      slaBadge: computeSlaBadge(100, "deterministic-fallback"),
+      slaBadges: deriveSlaBadges({ sourceType: "deterministic-fallback", latencyEstimateMs: 100 })
     });
 
     const sorted = getSortedProviders();
@@ -155,8 +163,10 @@ describe("provider pricing", () => {
       latencyEstimateMs: 100,
       qualityScore: 50,
       sourceType: "deterministic-fallback",
+      provenance: "mock",
       enabled: false,
-      slaBadge: computeSlaBadge(100, "deterministic-fallback")
+      slaBadge: computeSlaBadge(100, "deterministic-fallback"),
+      slaBadges: deriveSlaBadges({ sourceType: "deterministic-fallback", latencyEstimateMs: 100 })
     });
 
     const sorted = getSortedProviders();
