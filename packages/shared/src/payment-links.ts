@@ -46,7 +46,7 @@ export function buildPaymentProofLinks(input: {
 }): PaymentProofLinks {
   return {
     transaction: input.transactionHash
-      ? buildTransactionLink(input.transactionHash, input.network)
+      ? buildTransactionLink input.transactionHash, input.network)
       : "not_available",
     payer: input.payerPublicKey
       ? buildAccountLink(input.payerPublicKey, input.network)
