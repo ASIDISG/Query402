@@ -190,7 +190,7 @@ describe("provider catalog baseline", () => {
   // These are the canonical baseline providers the demo and SCF pitch depend on.
   // Changing any field here requires intentional review — the test will surface
   // exactly which row and field drifted.
-  const baseline: BaselineRow = [
+  const baseline: BaselineRow[] = [
     {
       id: "search.basic",
       category: "search",
