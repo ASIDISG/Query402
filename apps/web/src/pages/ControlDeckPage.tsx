@@ -792,7 +792,7 @@ export default function ControlDeckPage() {
               <p className="empty-note">Waiting for results. Start a query from the left panel.</p>
             ) : (
               <>
-                <PaymentEvidenceBanner payment={result.payment} />
+                <PaymentEvidenceBanner payment={result.payment} receipt={receipt} />
 
                 <div className="result-meta">
                   <span>{result.result.providerName}</span>
